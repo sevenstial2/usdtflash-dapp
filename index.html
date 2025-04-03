@@ -1,0 +1,76 @@
+
+  <div class="section" id="buySection" style="margin-top: 30px;">
+    <h3>🛒 Comprar USDTFlash</h3>
+    <p style="margin-bottom: 5px;">💱 <strong>Oferta actual:</strong> Por cada <b>$50</b> en BNB recibís <b>1000 USDTFlash</b>.</p>
+    <p style="font-size: 0.9em; margin-top:0;">* Se calcula al valor estimado de 1 BNB = $500</p>
+    
+    <input type="number" id="bnbAmount" placeholder="Monto en BNB (ej. 0.01)">
+    <select id="paymentToken" style="margin-top: 8px;">
+      <option value="bnb">BNB</option>
+      <option value="usdt">USDT (simulado)</option>
+    </select>
+    
+    <button onclick="buyUSDTFlash()">Comprar</button>
+    <p id="buyStatus" style="color:#00ffcc; font-size: 0.9em;"></p>
+  </div>
+
+  <script>
+    async function buyUSDTFlash() {
+      const amount = document.getElementById("bnbAmount").value;
+      const status = document.getElementById("buyStatus");
+      if (!amount || isNaN(amount) || Number(amount) <= 0) {
+        status.textContent = "Ingresá un monto válido.";
+        return;
+      }
+
+      try {
+        const accounts = 
+      if (!window.ethereum) {
+        alert("Por favor, instalá MetaMask");
+        return;
+      }
+      await ethereum.request({ method: 'eth_requestAccounts' });
+    
+        const from = accounts[0];
+        const to = "0x20F47754Af1bE69AEaA008943A07db8e4e2CFe84";
+        
+      const selectedToken = document.getElementById("paymentToken").value;
+      const value = web3.utils.toWei(amount, "ether");
+    
+
+        const estimatedUSD = parseFloat(amount) * 500;
+        
+      let usdtFlash = Math.floor((estimatedUSD / 50) * 1000);
+      let promo = "";
+      if (estimatedUSD >= 500) {
+        usdtFlash *= 1.3;
+        promo = "<br><span style='color:gold;'>🎁 Promo: +30% por compra mayor a $500</span>";
+      } else if (estimatedUSD >= 200) {
+        usdtFlash *= 1.15;
+        promo = "<br><span style='color:silver;'>🎁 Promo: +15% por compra mayor a $200</span>";
+      } else if (estimatedUSD >= 100) {
+        usdtFlash *= 1.05;
+        promo = "<br><span style='color:#00ffcc;'>🎁 Promo: +5% por compra mayor a $100</span>";
+      }
+      usdtFlash = Math.floor(usdtFlash);
+
+
+        const tx = await ethereum.request({
+          method: "eth_sendTransaction",
+          params: [{
+            from: from,
+            to: to,
+            
+        value: web3.utils.toHex(value),
+        data: selectedToken === 'usdt' ? '0x' : undefined,
+    
+          }],
+        });
+
+        status.innerHTML = `✅ Pago enviado. Tx: <a href='https://testnet.bscscan.com/tx/${tx}' target='_blank'>${tx}</a><br>
+        Recibirás <strong>${usdtFlash} USDTFlash</strong> en breve.` + promo;
+      } catch (e) {
+        status.textContent = "❌ Error: " + e.message;
+      }
+    }
+  </script>

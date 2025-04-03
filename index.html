@@ -1,0 +1,452 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="icon" href="https://cryptologos.cc/logos/tether-usdt-logo.png?v=024" type="image/png">
+  <meta charset="UTF-8">
+  <title>USDTFlash DApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js">
+    function copyWallet() {
+      const text = document.getElementById("walletAddress").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById("copyStatus").textContent = "Dirección copiada ✅";
+        setTimeout(() => document.getElementById("copyStatus").textContent = "", 2000);
+      });
+    }
+
+    function shareWhatsApp() {
+      const address = document.getElementById("walletAddress").textContent;
+      const message = encodeURIComponent("¡Hola! Esta es mi dirección de wallet en BSC Testnet: " + address);
+      const url = `https://wa.me/?text=${message}`;
+      window.open(url, "_blank");
+    }
+</script>
+
+
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+
+    body.dark-mode {
+      background-color: #0e0e0e;
+      color: #f0f0f0;
+    }
+
+    body.dark-mode .section {
+      background-color: rgba(255, 255, 255, 0.07);
+    }
+
+    body.dark-mode button {
+      background-color: #333;
+      color: #00ffcc;
+    }
+
+    #darkToggle {
+      position: fixed;
+      top: 12px;
+      right: 16px;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9em;
+      border: 1px solid #fff2;
+    }
+
+    :root {
+      --fade-duration: 0.6s;
+    }
+
+    body {
+      animation: fadeIn var(--fade-duration) ease-in;
+    }
+
+    .section {
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    button {
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('https://cdn.pixabay.com/photo/2021/08/01/09/27/crypto-6514723_1280.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    h2, h3 {
+      color: #00ffcc;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #00cc99;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #009977;
+    }
+
+    #eventLog {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #eventLog li {
+      background: rgba(255, 255, 255, 0.1);
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .section {
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+  </style>
+
+  <link rel="preload" href="https://cdn.pixabay.com/download/audio/2022/03/15/audio_cbd9f8d6de.mp3?filename=success-1-6297.mp3" as="audio" type="audio/mpeg">
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+
+    body.dark-mode {
+      background-color: #0e0e0e;
+      color: #f0f0f0;
+    }
+
+    body.dark-mode .section {
+      background-color: rgba(255, 255, 255, 0.07);
+    }
+
+    body.dark-mode button {
+      background-color: #333;
+      color: #00ffcc;
+    }
+
+    #darkToggle {
+      position: fixed;
+      top: 12px;
+      right: 16px;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9em;
+      border: 1px solid #fff2;
+    }
+
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 10px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: 1.8em !important;
+      }
+      input, button {
+        font-size: 1em !important;
+        width: 100%;
+      }
+    }
+
+    #loader {
+      display: none;
+      margin: 20px auto;
+      border: 6px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 6px solid #00ffcc;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .success-check {
+      display: none;
+      font-size: 2em;
+      color: #00ffcc;
+      text-align: center;
+      margin-top: 20px;
+      animation: fadeIn 1s ease-in;
+    }
+  </style>
+</head>
+
+
+<body>
+  <div id="darkToggle">🌙 Modo oscuro</div>
+
+  <div id="splashScreen" style="animation: fadeIn 1.2s ease-in;" style="text-align:center; padding: 60px;">
+    <img src="https://cdn.jsdelivr.net/gh/spothq/tether-usdt-logo/tether-usdt-logo.png" alt="Tether Logo" style="max-width: 160px; margin-bottom: 20px;">
+    <h1 style="color: white; font-size: 2.5em;">Bienvenido a <span style='color:#00ffcc;'>USDTFlash ⚡</span></h1>
+    <p style="color: #ccc;">Interactuá con tu token en Binance Smart Chain Testnet</p>
+    <button id="connectButton" style="
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #f6851b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 30px;
+    ">
+      
+      Conectar con MetaMask
+    </button>
+  </div>
+  
+  <div id="loader"></div>
+  <div class="success-check" id="successMsg">✔️ ¡Conectado!</div>
+  <div id="mainApp"  style="display: none;">
+
+  <div style="text-align:center;">
+    <button id="connectButton" style="
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #f6851b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    ">
+      
+      Conectar con MetaMask
+    </button>
+  </div>
+
+  <div class="section">
+    <h2>Interactuar con USDTFlash</h2>
+    <p><strong>Dirección del contrato:</strong> <span id="contractAddress"></span></p>
+    <p><strong>Nombre del token:</strong> <span id="tokenName"></span></p>
+    <p><strong>Símbolo:</strong> <span id="tokenSymbol"></span></p>
+    <p><strong>Mi balance:</strong> <span id="userBalance"></span></p>
+    <p><strong>Mi wallet:</strong> <span id="walletAddress" style="word-break: break-all;"></span></p>
+    <button onclick="copyWallet()" style="background-color:#444;margin-top:5px;">📋 Copiar dirección</button>
+    
+    <button onclick="shareWhatsApp()" style="background-color:#25D366; color:white; margin-top:10px;">
+      📲 Compartir por WhatsApp
+    </button>
+
+    <p id="copyStatus" style="font-size: 0.9em; color: #00ffcc;"></p>
+
+    <p><strong>Total Supply:</strong> <span id="supply"></span></p>
+  </div>
+
+  <div class="section">
+    <h3>Enviar tokens</h3>
+    <input type="text" id="toAddress" placeholder="Dirección del destinatario">
+    <input type="number" id="amount" placeholder="Cantidad">
+    <button onclick="transfer()">Transferir</button>
+    <p id="txStatus"></p>
+  </div>
+
+  <div class="section">
+    <h3>Eventos recientes</h3>
+    <button onclick="loadEvents()">Cargar eventos</button>
+    <ul id="eventLog"></ul>
+  </div>
+
+  <script>
+    const contractAddress = "0xa85c7b43813a39966c28cf205147156a80cb86aa";
+    const contractABI = [{"inputs": [{"internalType": "uint256", "name": "initialSupply", "type": "uint256"}, {"internalType": "uint256", "name": "durationInMinutes", "type": "uint256"}], "stateMutability": "nonpayable", "type": "constructor"}, {"inputs": [], "name": "decimals", "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "expirationTime", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "hasExpired", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "name", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "owner", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "symbol", "outputs": [{"internalType": "string", "name": "", "type": "string"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "totalSupply", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "balanceOf", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "transfer", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "spender", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "approve", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "sender", "type": "address"}, {"internalType": "address", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "transferFrom", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "nonpayable", "type": "function"}];
+
+    let web3;
+    let contract;
+    let userAccount;
+
+    async function init() {
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        await ethereum.enable();
+        const accounts = await web3.eth.getAccounts();
+        userAccount = accounts[0];
+
+        contract = new web3.eth.Contract(contractABI, contractAddress);
+        
+      document.getElementById("contractAddress").textContent = contractAddress;
+      document.getElementById("walletAddress").textContent = userAccount;
+
+
+        const name = await contract.methods.name().call();
+        const symbol = await contract.methods.symbol().call();
+        const balance = await contract.methods.balanceOf(userAccount).call();
+        const supply = await contract.methods.totalSupply().call();
+
+        document.getElementById("tokenName").textContent = name;
+        
+      document.getElementById("tokenSymbol").textContent = symbol;
+      document.getElementById("qrSection").style.display = "block";
+      document.getElementById("qrCode").src =
+        `https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${userAccount}`;
+
+        document.getElementById("userBalance").textContent = web3.utils.fromWei(balance, 'ether') + " " + symbol;
+        document.getElementById("supply").textContent = web3.utils.fromWei(supply, 'ether') + " " + symbol;
+      } else {
+        alert("Por favor, instala Metamask");
+      }
+    }
+
+    async function transfer() {
+      const to = document.getElementById("toAddress").value;
+      const amount = document.getElementById("amount").value;
+      const value = web3.utils.toWei(amount, 'ether');
+      try {
+        const receipt = await contract.methods.transfer(to, value).send({ from: userAccount });
+        document.getElementById("txStatus").textContent = "Transferencia confirmada en tx: " + receipt.transactionHash;
+      } catch (err) {
+        document.getElementById("txStatus").textContent = "Error: " + err.message;
+      }
+    }
+
+    async function loadEvents() {
+      const events = await contract.getPastEvents('Transfer', {
+        fromBlock: 0,
+        toBlock: 'latest'
+      });
+      const log = document.getElementById("eventLog");
+      log.innerHTML = "";
+      events.forEach(e => {
+        const li = document.createElement("li");
+        li.textContent = `De: ${e.returnValues.from} → Para: ${e.returnValues.to} | Cantidad: ${web3.utils.fromWei(e.returnValues.value, 'ether')}`;
+        log.appendChild(li);
+      });
+    }
+
+    
+    
+    document.getElementById("connectButton").onclick = async () => {
+      const loader = document.getElementById("loader");
+      const success = document.getElementById("successMsg");
+      loader.style.display = "block";
+
+      await init();
+    };
+
+  
+    function copyWallet() {
+      const text = document.getElementById("walletAddress").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById("copyStatus").textContent = "Dirección copiada ✅";
+        setTimeout(() => document.getElementById("copyStatus").textContent = "", 2000);
+      });
+    }
+
+    function shareWhatsApp() {
+      const address = document.getElementById("walletAddress").textContent;
+      const message = encodeURIComponent("¡Hola! Esta es mi dirección de wallet en BSC Testnet: " + address);
+      const url = `https://wa.me/?text=${message}`;
+      window.open(url, "_blank");
+    }
+</script>
+
+
+
+  
+    </div> <!-- end mainApp -->
+    <div id="thankYouMessage" style="display:none; text-align:center; padding: 20px; font-size: 1.4em; color: #00ffcc; animation: fadeIn 1s ease-in;">
+      🙌 ¡Gracias por usar <strong>USDTFlash ⚡</strong>!
+    </div>
+    
+
+  <script>
+    
+    document.getElementById("connectButton").onclick = async () => {
+      const loader = document.getElementById("loader");
+      const success = document.getElementById("successMsg");
+      loader.style.display = "block";
+
+      await init();
+      document.getElementById("splashScreen").style.display = "none";
+      
+      const sound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_cbd9f8d6de.mp3?filename=success-1-6297.mp3");
+      sound.play();
+      loader.style.display = "none";
+      success.style.display = "block";
+      setTimeout(() => {
+        document.getElementById("splashScreen").style.display = "none";
+        
+      document.getElementById("mainApp").style.display = "block";
+      document.getElementById("thankYouMessage").style.display = "block";
+
+        success.style.display = "none";
+      }, 2000);
+
+    };
+  
+    function copyWallet() {
+      const text = document.getElementById("walletAddress").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById("copyStatus").textContent = "Dirección copiada ✅";
+        setTimeout(() => document.getElementById("copyStatus").textContent = "", 2000);
+      });
+    }
+
+    function shareWhatsApp() {
+      const address = document.getElementById("walletAddress").textContent;
+      const message = encodeURIComponent("¡Hola! Esta es mi dirección de wallet en BSC Testnet: " + address);
+      const url = `https://wa.me/?text=${message}`;
+      window.open(url, "_blank");
+    }
+</script>
+
+
+
+  <div class="section" id="qrSection" style="display:none;">
+    <h3>📱 Escaneá tu Wallet</h3>
+    <p>Podés escanear este código QR para compartir tu dirección:</p>
+    <img id="qrCode" src="" alt="QR de tu dirección" style="max-width: 200px; margin-top: 10px;">
+  </div>
+
+</body>
+</html>
+
+</html>

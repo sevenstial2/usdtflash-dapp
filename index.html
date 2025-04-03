@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>USDTFlash DApp</title>
+</head>
+<body style="margin:0;padding:0;background:#009688;">
+  <div style="text-align:center;margin-top:40vh;font-size:1.5em;color:white;">
+    Cargando DApp...
+  </div>
+  
+  <div id="langToggle" style="position: fixed; top: 10px; left: 16px; z-index: 1000; background: rgba(0,0,0,0.4); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9em; border: 1px solid #fff2;">
+    🌐 Language: <select id="langSelect" style="background: transparent; color: white; border: none; font-weight: bold;">
+      <option value="en">EN</option>
+      <option value="es">ES</option>
+    </select>
+  </div>
+
+  <script>
+    const userLang = navigator.language || navigator.userLanguage;
+    const preferred = userLang.startsWith("es") ? "es" : "en";
+    const langSelect = document.getElementById("langSelect");
+
+    langSelect.value = preferred;
+
+    langSelect.onchange = function () {
+      const lang = langSelect.value;
+      const target = lang === "es" ? "index_es.html" : "index_en.html";
+      window.location.href = target;
+    };
+
+    // Auto-redirect on first load
+    if (window.location.pathname.endsWith("/") || window.location.pathname.endsWith("index.html")) {
+      const target = preferred === "es" ? "index_es.html" : "index_en.html";
+      window.location.href = target;
+    }
+  </script>
+
+</body>
+</html>
